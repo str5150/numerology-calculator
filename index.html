@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数秘術計算ツール</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .input-section {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        .result-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .result-value {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .result-description {
+            color: #666;
+            margin-top: 10px;
+        }
+        .compatibility {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 数秘術計算ツール</h1>
+        
+        <div class="input-section">
+            <label for="birthdate">生年月日を入力してください：</label>
+            <input type="date" id="birthdate" required>
+            <button onclick="calculateNumerology()">数秘術を計算する</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>📊 計算結果</h2>
+            <div id="basic-results"></div>
+            
+            <h2>🌟 総合診断</h2>
+            <div id="diagnosis"></div>
+            
+            <h2>💫 相性診断</h2>
+            <div id="compatibility"></div>
+            
+            <h2>🎯 アドバイス</h2>
+            <div id="advice"></div>
+        </div>
+    </div>
+
+    <script>
+        // 数秘術計算ロジック
+        function calculateNumerology() {
+            const birthdate = document.getElementById('birthdate').value;
+            if (!birthdate) {
+                alert('生年月日を入力してください');
+                return;
+            }
+            
+            const date = new Date(birthdate);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            // 計算実行
+            const results = calculateAll(birthdate);
+            displayResults(results);
+        }
+        
+        function calculateAll(birthdate) {
+            const date = new Date(birthdate);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            // 年、月、日の計算
+            const yearNum = sumDigits(year);
+            const monthNum = sumDigits(month);
+            const dayNum = sumDigits(day);
+            
+            // 過去、現在、未来の計算
+            const past = dayNum;
+            const present = sumDigits(birthdate.replace(/-/g, ''));
+            const future = sumDigits(month + day);
+            
+            // 要素、意識、在り方の計算
+            const element = sumDigits(past + present);
+            const consciousness = sumDigits(present + future);
+            const being = sumDigits(past + present + future);
+            
+            // サイクル計算
+            const currentYear = 2025;
+            const socialCycle = sumDigits(currentYear);
+            const personalCycle = sumDigits(socialCycle + monthNum + dayNum);
+            
+            return {
+                year: yearNum,
+                month: monthNum,
+                day: dayNum,
+                past: past,
+                present: present,
+                future: future,
+                element: element,
+                consciousness: consciousness,
+                being: being,
+                socialCycle: socialCycle,
+                personalCycle: personalCycle
+            };
+        }
+        
+        function sumDigits(num) {
+            if (num === 11 || num === 22 || num === 33) return num;
+            const sum = String(num).split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+            return sum > 9 ? sumDigits(sum) : sum;
+        }
+        
+        function displayResults(results) {
+            const basicResults = document.getElementById('basic-results');
+            const diagnosis = document.getElementById('diagnosis');
+            const compatibility = document.getElementById('compatibility');
+            const advice = document.getElementById('advice');
+            
+            // 基本結果の表示
+            basicResults.innerHTML = `
+                <div class="result-card">
+                    <div class="result-title">過去</div>
+                    <div class="result-value">${results.past}</div>
+                    <div class="result-description">${getPastDescription(results.past)}</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">現在</div>
+                    <div class="result-value">${results.present}</div>
+                    <div class="result-description">${getPresentDescription(results.present)}</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">未来</div>
+                    <div class="result-value">${results.future}</div>
+                    <div class="result-description">${getFutureDescription(results.future)}</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">要素</div>
+                    <div class="result-value">${results.element}</div>
+                    <div class="result-description">${getElementDescription(results.element)}</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">意識</div>
+                    <div class="result-value">${results.consciousness}</div>
+                    <div class="result-description">${getConsciousnessDescription(results.consciousness)}</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">在り方</div>
+                    <div class="result-value">${results.being}</div>
+                    <div class="result-description">${getBeingDescription(results.being)}</div>
+                </div>
+            `;
+            
+            // 診断結果の表示
+            diagnosis.innerHTML = getDiagnosis(results);
+            
+            // 相性診断の表示
+            compatibility.innerHTML = getCompatibility(results);
+            
+            // アドバイスの表示
+            advice.innerHTML = getAdvice(results);
+            
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        // 各数字の説明を取得する関数
+        function getPastDescription(num) {
+            const descriptions = {
+                1: "リーダーシップを発揮してきた過去、独創的な経験",
+                2: "調和を重視してきた過去、協力的な経験",
+                3: "社交的で楽観的な過去、創造的な経験",
+                4: "誠実で着実な過去、努力を重ねてきた経験",
+                5: "変化に富んだ過去、冒険的な経験",
+                6: "愛と調和に満ちた過去、奉仕的な経験",
+                7: "探求と完璧を求めた過去、孤高な経験",
+                8: "成果を重視した過去、カリスマ的な経験",
+                9: "平和と神秘を求めた過去、達観的な経験",
+                11: "直感と感受性に富んだ過去、霊的な経験",
+                22: "大きなスケールでの経験、政治的な経験",
+                33: "無償の愛に満ちた過去、菩薩的な経験"
+            };
+            return descriptions[num] || "過去の経験";
+        }
+        
+        function getPresentDescription(num) {
+            const descriptions = {
+                1: "現在、リーダーシップを発揮すべき時期、独創性が求められる",
+                2: "現在、調和と協力を重視すべき時期、バランスが重要",
+                3: "現在、社交性と創造性を活かすべき時期、楽観的なアプローチが効果的",
+                4: "現在、着実な努力が求められる時期、誠実さが評価される",
+                5: "現在、変化と冒険を求められる時期、柔軟性が重要",
+                6: "現在、愛と奉仕が求められる時期、調和を重視すべき",
+                7: "現在、探求と完璧を求める時期、深い洞察が重要",
+                8: "現在、成果とカリスマ性が求められる時期、実力が評価される",
+                9: "現在、平和と神秘を求める時期、達観的な視点が重要",
+                11: "現在、直感と感受性が重要になる時期、霊的な能力が開花",
+                22: "現在、大きなスケールでの活動が求められる時期、政治的な能力が重要",
+                33: "現在、無償の愛が求められる時期、菩薩的な慈悲が重要"
+            };
+            return descriptions[num] || "現在の状況";
+        }
+        
+        function getFutureDescription(num) {
+            const descriptions = {
+                1: "未来、リーダーシップを発揮する方向性、独創的な道",
+                2: "未来、調和と協力を重視する方向性、バランスの取れた道",
+                3: "未来、社交性と創造性を活かす方向性、楽観的な道",
+                4: "未来、着実な努力を重ねる方向性、誠実な道",
+                5: "未来、変化と冒険を求める方向性、柔軟な道",
+                6: "未来、愛と奉仕を重視する方向性、調和の道",
+                7: "未来、探求と完璧を求める方向性、深い洞察の道",
+                8: "未来、成果とカリスマ性を求める方向性、実力の道",
+                9: "未来、平和と神秘を求める方向性、達観の道",
+                11: "未来、直感と感受性を重視する方向性、霊的な道",
+                22: "未来、大きなスケールでの活動を目指す方向性、政治的な道",
+                33: "未来、無償の愛を求める方向性、菩薩的な道"
+            };
+            return descriptions[num] || "未来の方向性";
+        }
+        
+        function getElementDescription(num) {
+            const descriptions = {
+                1: "リーダーシップと独創性を兼ね備えた本質",
+                2: "調和と協力を重視する本質",
+                3: "社交性と創造性に富んだ本質",
+                4: "誠実で着実な本質",
+                5: "変化と冒険を愛する本質",
+                6: "愛と奉仕を重視する本質",
+                7: "探求と完璧を求める本質",
+                8: "成果とカリスマ性を求める本質",
+                9: "平和と神秘を求める本質",
+                11: "直感と感受性に富んだ本質",
+                22: "大きなスケールでの活動を求める本質",
+                33: "無償の愛を求める本質"
+            };
+            return descriptions[num] || "本質的な性格";
+        }
+        
+        function getConsciousnessDescription(num) {
+            const descriptions = {
+                1: "意識的にリーダーシップを発揮する行動パターン",
+                2: "意識的に調和と協力を重視する行動パターン",
+                3: "意識的に社交性と創造性を活かす行動パターン",
+                4: "意識的に着実な努力を重ねる行動パターン",
+                5: "意識的に変化と冒険を求める行動パターン",
+                6: "意識的に愛と奉仕を重視する行動パターン",
+                7: "意識的に探求と完璧を求める行動パターン",
+                8: "意識的に成果とカリスマ性を求める行動パターン",
+                9: "意識的に平和と神秘を求める行動パターン",
+                11: "意識的に直感と感受性を重視する行動パターン",
+                22: "意識的に大きなスケールでの活動を求める行動パターン",
+                33: "意識的に無償の愛を求める行動パターン"
+            };
+            return descriptions[num] || "意識的な行動パターン";
+        }
+        
+        function getBeingDescription(num) {
+            const descriptions = {
+                1: "リーダーシップと独創性で人々を導く使命",
+                2: "調和と協力で人々を支える使命",
+                3: "社交性と創造性で人々を楽しませる使命",
+                4: "誠実さと着実さで人々を支える使命",
+                5: "変化と冒険で人々を刺激する使命",
+                6: "愛と奉仕で人々を癒す使命",
+                7: "探求と完璧で人々を啓発する使命",
+                8: "成果とカリスマ性で人々を導く使命",
+                9: "平和と神秘で人々を悟らせる使命",
+                11: "直感と感受性で人々を導く使命",
+                22: "大きなスケールで人々を導く使命",
+                33: "無償の愛で人々を救済する使命"
+            };
+            return descriptions[num] || "人生の使命";
+        }
+        
+        function getDiagnosis(results) {
+            return `
+                <div class="result-card">
+                    <div class="result-title">基本性格</div>
+                    <div class="result-description">
+                        ${getBasicPersonality(results)}
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">人生の流れ</div>
+                    <div class="result-description">
+                        ${getLifeFlow(results)}
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">職業適性</div>
+                    <div class="result-description">
+                        ${getCareerAdvice(results)}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getBasicPersonality(results) {
+            // 過去、現在、未来の組み合わせから性格を判断
+            const past = results.past;
+            const present = results.present;
+            const future = results.future;
+            
+            if (past === 1 || present === 1 || future === 1) {
+                return "リーダーシップと独創性を兼ね備えた性格";
+            } else if (past === 2 || present === 2 || future === 2) {
+                return "調和を重視する協調性の高い性格";
+            } else if (past === 3 || present === 3 || future === 3) {
+                return "社交的で創造性に富む性格";
+            } else if (past === 7 || present === 7 || future === 7) {
+                return "探求心と完璧を求める知的性格";
+            } else if (past === 11 || present === 11 || future === 11) {
+                return "直感と感受性に富む霊的性格";
+            } else {
+                return "バランスの取れた性格";
+            }
+        }
+        
+        function getLifeFlow(results) {
+            const past = results.past;
+            const present = results.present;
+            const future = results.future;
+            
+            if (past < present && present < future) {
+                return "上昇型：人生が上向きに発展していく流れ";
+            } else if (past === present && present === future) {
+                return "安定型：人生が安定して継続していく流れ";
+            } else if (past !== present && present !== future) {
+                return "変化型：人生に大きな変化が訪れる流れ";
+            } else {
+                return "回帰型：一度下降した後、再び上昇する流れ";
+            }
+        }
+        
+        function getCareerAdvice(results) {
+            const element = results.element;
+            const being = results.being;
+            
+            if (element === 1 || being === 1) {
+                return "リーダーシップを活かせる仕事、起業家、コンサルタント";
+            } else if (element === 2 || being === 2) {
+                return "調和を重視する仕事、カウンセラー、コーチ";
+            } else if (element === 3 || being === 3) {
+                return "創造性を活かせる仕事、アーティスト、デザイナー";
+            } else if (element === 7 || being === 7) {
+                return "専門性を活かせる仕事、研究者、学者";
+            } else if (element === 11 || being === 11) {
+                return "霊的な能力を活かせる仕事、ヒーラー、セラピスト";
+            } else {
+                return "バランスの取れた仕事、教育者、指導者";
+            }
+        }
+        
+        function getCompatibility(results) {
+            const past = results.past;
+            const present = results.present;
+            const future = results.future;
+            
+            let goodCompatibility = [];
+            let badCompatibility = [];
+            
+            // 良い相性の判断
+            if (past === 2) goodCompatibility.push("過去が6の人（調和と愛の相性）");
+            if (present === 1) goodCompatibility.push("現在が2の人（リーダーとサポーターの相性）");
+            if (future === 11) goodCompatibility.push("未来が22の人（霊感と政治力の相性）");
+            
+            // 悪い相性の判断
+            if (past === 2) badCompatibility.push("過去が8の人（調和と成果追求の対立）");
+            if (present === 1) badCompatibility.push("現在が1の人（リーダー同士の対立）");
+            if (future === 11) badCompatibility.push("未来が8の人（霊感と成果追求の対立）");
+            
+            return `
+                <div class="result-card compatibility">
+                    <div class="result-title">良い相性の人</div>
+                    <div class="result-description">
+                        ${goodCompatibility.length > 0 ? goodCompatibility.join('<br>') : '多くの人と相性が良い'}
+                    </div>
+                </div>
+                <div class="result-card warning">
+                    <div class="result-title">注意が必要な相性</div>
+                    <div class="result-description">
+                        ${badCompatibility.length > 0 ? badCompatibility.join('<br>') : '特に注意が必要な相性はありません'}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getAdvice(results) {
+            const past = results.past;
+            const present = results.present;
+            const future = results.future;
+            
+            let advice = [];
+            
+            if (past === 2) {
+                advice.push("人との調和を保ちながら、時には自分の意見を主張する勇気を持ちましょう");
+            }
+            if (present === 1) {
+                advice.push("リーダーシップを発揮する時は、周りの意見も取り入れる柔軟性が大切です");
+            }
+            if (future === 11) {
+                advice.push("直感を信じることは大切ですが、現実的な基盤も築く必要があります");
+            }
+            if (past === 7) {
+                advice.push("深い探求心を活かしつつ、人との交流も大切にしましょう");
+            }
+            if (present === 3) {
+                advice.push("社交性と創造性を活かして、多くの人に影響を与えてください");
+            }
+            
+            if (advice.length === 0) {
+                advice.push("自分の強みを活かしながら、バランスの取れた人生を送りましょう");
+            }
+            
+            return `
+                <div class="result-card">
+                    <div class="result-title">人生のアドバイス</div>
+                    <div class="result-description">
+                        ${advice.join('<br><br>')}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 
