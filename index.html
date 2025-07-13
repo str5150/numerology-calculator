@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
     <title>数秘術計算ツール</title>
     <style>
         body {
@@ -19,6 +19,40 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .login-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .password-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .login-button {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .login-button:hover {
+            transform: translateY(-2px);
+        }
+        .main-content {
+            display: none;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 10px;
         }
         h1 {
             text-align: center;
@@ -93,30 +127,64 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔮 数秘術計算ツール</h1>
-        
-        <div class="input-section">
-            <label for="birthdate">生年月日を入力してください：</label>
-            <input type="date" id="birthdate" required>
-            <button onclick="calculateNumerology()">数秘術を計算する</button>
+        <div id="login-section" class="login-section">
+            <h1>🔮 数秘術計算ツール</h1>
+            <p>パスワードを入力してください</p>
+            <input type="password" id="password" class="password-input" placeholder="パスワード">
+            <br>
+            <button class="login-button" onclick="login()">ログイン</button>
+            <div id="error-message" class="error"></div>
         </div>
         
-        <div id="results" class="results">
-            <h2>📊 計算結果</h2>
-            <div id="basic-results"></div>
+        <div id="main-content" class="main-content">
+            <h1>🔮 数秘術計算ツール</h1>
             
-            <h2>🌟 総合診断</h2>
-            <div id="diagnosis"></div>
+            <div class="input-section">
+                <label for="birthdate">生年月日を入力してください：</label>
+                <input type="date" id="birthdate" required>
+                <button onclick="calculateNumerology()">数秘術を計算する</button>
+            </div>
             
-            <h2>💫 相性診断</h2>
-            <div id="compatibility"></div>
-            
-            <h2>🎯 アドバイス</h2>
-            <div id="advice"></div>
+            <div id="results" class="results">
+                <h2>📊 計算結果</h2>
+                <div id="basic-results"></div>
+                
+                <h2>🌟 総合診断</h2>
+                <div id="diagnosis"></div>
+                
+                <h2>💫 相性診断</h2>
+                <div id="compatibility"></div>
+                
+                <h2>🎯 アドバイス</h2>
+                <div id="advice"></div>
+            </div>
         </div>
     </div>
 
     <script>
+        // パスワード設定
+        const CORRECT_PASSWORD = "numerology2024";
+        
+        function login() {
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                errorMessage.textContent = '';
+            } else {
+                errorMessage.textContent = 'パスワードが正しくありません';
+                document.getElementById('password').value = '';
+            }
+        }
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+        
         // 数秘術計算ロジック
         function calculateNumerology() {
             const birthdate = document.getElementById('birthdate').value;
@@ -187,50 +255,43 @@
             const diagnosis = document.getElementById('diagnosis');
             const compatibility = document.getElementById('compatibility');
             const advice = document.getElementById('advice');
-            
-            // 基本結果の表示
+
+            // デザイン性の高い横並び表示
             basicResults.innerHTML = `
-                <div class="result-card">
-                    <div class="result-title">過去</div>
-                    <div class="result-value">${results.past}</div>
-                    <div class="result-description">${getPastDescription(results.past)}</div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 0.5em; margin-bottom: 30px; flex-wrap: wrap;">
+                  <div style='flex:1; text-align:center;'>
+                    <div style="color:#3578e5; font-weight:bold;">過去</div>
+                    <div style="background:#e3f0ff; color:#3578e5; border-radius:50%; width:56px; height:56px; display:flex; align-items:center; justify-content:center; font-size:2em; margin:0 auto; box-shadow:0 2px 8px #3578e522;">${results.past}</div>
+                  </div>
+                  <div style='flex:1; text-align:center;'>
+                    <div style="color:#2dbd6e; font-weight:bold;">要素</div>
+                    <div style="background:#e6f9ed; color:#2dbd6e; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.5em; margin:0 auto; box-shadow:0 2px 8px #2dbd6e22;">${results.element}</div>
+                  </div>
+                  <div style='flex:1; text-align:center;'>
+                    <div style="color:#764ba2; font-weight:bold;">現在</div>
+                    <div style="background:#f3eaff; color:#764ba2; border-radius:50%; width:56px; height:56px; display:flex; align-items:center; justify-content:center; font-size:2em; margin:0 auto; box-shadow:0 2px 8px #764ba222;">${results.present}</div>
+                  </div>
+                  <div style='flex:1; text-align:center;'>
+                    <div style="color:#ff9800; font-weight:bold;">意識</div>
+                    <div style="background:#fff5e6; color:#ff9800; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.5em; margin:0 auto; box-shadow:0 2px 8px #ff980022;">${results.consciousness}</div>
+                  </div>
+                  <div style='flex:1; text-align:center;'>
+                    <div style="color:#e53935; font-weight:bold;">未来</div>
+                    <div style="background:#ffeaea; color:#e53935; border-radius:50%; width:56px; height:56px; display:flex; align-items:center; justify-content:center; font-size:2em; margin:0 auto; box-shadow:0 2px 8px #e5393522;">${results.future}</div>
+                  </div>
                 </div>
-                <div class="result-card">
-                    <div class="result-title">現在</div>
-                    <div class="result-value">${results.present}</div>
-                    <div class="result-description">${getPresentDescription(results.present)}</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-title">未来</div>
-                    <div class="result-value">${results.future}</div>
-                    <div class="result-description">${getFutureDescription(results.future)}</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-title">要素</div>
-                    <div class="result-value">${results.element}</div>
-                    <div class="result-description">${getElementDescription(results.element)}</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-title">意識</div>
-                    <div class="result-value">${results.consciousness}</div>
-                    <div class="result-description">${getConsciousnessDescription(results.consciousness)}</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-title">在り方</div>
-                    <div class="result-value">${results.being}</div>
-                    <div class="result-description">${getBeingDescription(results.being)}</div>
+                <div style="text-align:center; margin-bottom:30px;">
+                  <div style="color:#bfa100; font-weight:bold; font-size:1.1em; letter-spacing:0.1em;">在り方</div>
+                  <div style="background:linear-gradient(90deg,#fffbe6,#fff3cd); color:#bfa100; border-radius:30px; display:inline-block; min-width:90px; padding:12px 32px; font-size:2.2em; font-weight:bold; box-shadow:0 2px 12px #bfa10022; margin-top:4px;">${results.being}</div>
                 </div>
             `;
-            
+
             // 診断結果の表示
             diagnosis.innerHTML = getDiagnosis(results);
-            
             // 相性診断の表示
             compatibility.innerHTML = getCompatibility(results);
-            
             // アドバイスの表示
             advice.innerHTML = getAdvice(results);
-            
             document.getElementById('results').style.display = 'block';
         }
         
